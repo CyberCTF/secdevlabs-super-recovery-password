@@ -5,7 +5,7 @@
 # owasp-top10-2021-apps/a4/super-recovery-password of secDevLabs (build/app/app/,
 # build/api/app/, the rest in app/), built by overlays of upstream's Dockerfiles, with its
 # MariaDB machine. The page calls the API at http://localhost:3000, so the API keeps upstream's
-# published port. `isoloom generate`, then `isoloom up docker`.
+# published port. `isoloom generate`, then `isoloom run docker`.
 version: 1
 name: secdevlabs-super-recovery-password
 
