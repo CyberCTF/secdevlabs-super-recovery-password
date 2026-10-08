@@ -15,7 +15,7 @@ the vendored app folder (see [UPSTREAM.md](UPSTREAM.md)).
 
 ```bash
 isoloom generate
-isoloom up docker
+isoloom run docker
 ```
 
 Then open http://localhost:40001/. The page calls the API at http://localhost:3000/. The same spec runs as Docker on a local VM (`docker-vm`), on a cloud VM
