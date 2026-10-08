@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://www.isoloom.com/schema/v1.json
+# Super Recovery Password (secDevLabs, by Globo.com) as an Isoloom spec: a React app and Go API
+# whose password recovery is an Insecure Design flaw (enumerable users, guessable answers, no
+# rate limit). Vendored unchanged from the app folder
+# owasp-top10-2021-apps/a4/super-recovery-password of secDevLabs (build/app/app/,
+# build/api/app/, the rest in app/), built by overlays of upstream's Dockerfiles, with its
+# MariaDB machine. The page calls the API at http://localhost:3000, so the API keeps upstream's
+# published port. `isoloom generate`, then `isoloom up docker`.
+version: 1
+name: secdevlabs-super-recovery-password
+
+networks:
+  lab: { cidr: 10.60.100.0/24, internet: false }
+
+machines:
+  db:
+    networks: { lab: 20 }
+    services: [{ port: 3306, name: mariadb }]
+    resources: { cpus: 1, memory_mb: 512 }
+    volumes: { data: /var/lib/mysql }
+    docker:
+      build: build/db
+
+  api:
+    networks: { lab: 11 }
+    services: [{ port: 3000, name: api, http: true, publish: 3000 }]
+    resources: { cpus: 1, memory_mb: 512 }
+    depends_on: [db]
+    docker:
+      build: build/api
+
+  app:
+    networks: { lab: 10 }
+    services: [{ port: 40001, name: web, http: true, publish: 40001 }]
+    resources: { cpus: 1, memory_mb: 1536 }
+    depends_on: [api]
+    docker:
+      build: build/app
+
+checks:
+  - name: the page answers
+    http: http://app:40001/
+    wait: 300
+  - name: the API answers
+    http: http://api:3000/healthcheck
+    wait: 120
+  - name: the recovery flow tells known logins from unknown ones
+    script: checks/userinfo.sh
+
+message: |
+  Super Recovery Password answers at http://localhost:{{ machines.app.services.0.publish }}/ and
+  its API at http://localhost:{{ machines.api.services.0.publish }}/. Look closely at "forgot my
+  password": who can it tell you exists, and what does it take to reset a password?
