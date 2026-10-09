@@ -9,6 +9,9 @@ services:
   db:
     build:
       context: ../../build/db
+      labels:
+        isoloom.managed: 'true'
+        isoloom.environment: secdevlabs-super-recovery-password
     image: isoloom/secdevlabs-super-recovery-password-db
     platform: linux/amd64
     hostname: db
@@ -39,6 +42,8 @@ services:
           memory: 512M
     labels:
       isoloom.service.mariadb: tcp:3306
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
     restart: unless-stopped
   db-routes:
     image: alpine:3.20
@@ -60,9 +65,15 @@ services:
       db:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
   api:
     build:
       context: ../../build/api
+      labels:
+        isoloom.managed: 'true'
+        isoloom.environment: secdevlabs-super-recovery-password
     image: isoloom/secdevlabs-super-recovery-password-api
     platform: linux/amd64
     hostname: api
@@ -98,6 +109,8 @@ services:
           memory: 512M
     labels:
       isoloom.service.api: http:3000
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
     restart: unless-stopped
   api-routes:
     image: alpine:3.20
@@ -119,9 +132,15 @@ services:
       api:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
   app:
     build:
       context: ../../build/app
+      labels:
+        isoloom.managed: 'true'
+        isoloom.environment: secdevlabs-super-recovery-password
     image: isoloom/secdevlabs-super-recovery-password-app
     platform: linux/amd64
     hostname: app
@@ -157,6 +176,8 @@ services:
           memory: 1536M
     labels:
       isoloom.service.web: http:40001
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
     restart: unless-stopped
   app-routes:
     image: alpine:3.20
@@ -178,6 +199,9 @@ services:
       app:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
   isoloom-check:
     image: curlimages/curl:8.11.1
     profiles:
@@ -207,6 +231,9 @@ services:
         condition: service_healthy
       app-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
   isoloom-check-db:
     image: curlimages/curl:8.11.1
     profiles:
@@ -230,6 +257,9 @@ services:
         condition: service_healthy
       app-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
   isoloom-check-api:
     image: curlimages/curl:8.11.1
     profiles:
@@ -253,6 +283,9 @@ services:
         condition: service_healthy
       app-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
   isoloom-check-app:
     image: curlimages/curl:8.11.1
     profiles:
@@ -276,6 +309,9 @@ services:
         condition: service_healthy
       app-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
   isoloom-probe-amd64:
     image: busybox:1.37.0-musl
     platform: linux/amd64
@@ -287,12 +323,24 @@ services:
     - isoloom-probe-amd64:/probe
     network_mode: none
     restart: no
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
 networks:
   lab:
     ipam:
       config:
       - subnet: 10.60.100.0/24
         gateway: 10.60.100.1
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
 volumes:
-  db-data: {}
-  isoloom-probe-amd64: {}
+  db-data:
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
+  isoloom-probe-amd64:
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
