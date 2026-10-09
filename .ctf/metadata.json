@@ -4,11 +4,5 @@
   "question": "Enumerate the application's users, then reset the admin's password through the recovery questions and log in as admin.",
   "category": "WEB",
   "difficulty": 2,
-  "evidence_kind": "SECRET",
-  "capabilities": [
-    "insecure-design",
-    "user-enumeration",
-    "brute-force",
-    "password-reset"
-  ]
+  "evidence_kind": "SECRET"
 }
