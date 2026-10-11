@@ -80,8 +80,13 @@ services:
     networks:
       lab:
         ipv4_address: 10.60.100.11
+    environment:
+      CTF_FLAG_MAIN: ${CTF_FLAG_MAIN:-}
     ports:
     - ${ISOLOOM_PUBLISH_ADDRESS:-127.0.0.1}:${ISOLOOM_PUBLISH_FIXED:+3000}:3000
+    volumes:
+    - api-ctf:/ctf
+    - isoloom-probe-amd64:/.isoloom-probe:ro
     healthcheck:
       test:
       - CMD
@@ -93,8 +98,6 @@ services:
       timeout: 3s
       retries: 60
       start_period: 10s
-    volumes:
-    - isoloom-probe-amd64:/.isoloom-probe:ro
     depends_on:
       isoloom-probe-amd64:
         condition: service_completed_successfully
@@ -135,6 +138,26 @@ services:
     labels:
       isoloom.managed: 'true'
       isoloom.environment: secdevlabs-super-recovery-password
+  api-init-1:
+    image: isoloom/secdevlabs-super-recovery-password-api
+    entrypoint:
+    - /bin/sh
+    - /isoloom/init/flag.sh
+    volumes:
+    - ../../ctf/flag.sh:/isoloom/init/flag.sh:ro
+    - api-ctf:/ctf
+    network_mode: service:api
+    environment:
+      CTF_FLAG_MAIN: ${CTF_FLAG_MAIN:-}
+    depends_on:
+      api:
+        condition: service_healthy
+      api-routes:
+        condition: service_healthy
+    restart: no
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
   app:
     build:
       context: ../../build/app
@@ -167,6 +190,8 @@ services:
         condition: service_completed_successfully
       api:
         condition: service_healthy
+      api-init-1:
+        condition: service_completed_successfully
       api-routes:
         condition: service_healthy
     deploy:
@@ -225,6 +250,8 @@ services:
         condition: service_healthy
       api:
         condition: service_healthy
+      api-init-1:
+        condition: service_completed_successfully
       api-routes:
         condition: service_healthy
       app:
@@ -251,6 +278,8 @@ services:
         condition: service_healthy
       api:
         condition: service_healthy
+      api-init-1:
+        condition: service_completed_successfully
       api-routes:
         condition: service_healthy
       app:
@@ -277,6 +306,8 @@ services:
         condition: service_healthy
       api:
         condition: service_healthy
+      api-init-1:
+        condition: service_completed_successfully
       api-routes:
         condition: service_healthy
       app:
@@ -303,6 +334,8 @@ services:
         condition: service_healthy
       api:
         condition: service_healthy
+      api-init-1:
+        condition: service_completed_successfully
       api-routes:
         condition: service_healthy
       app:
@@ -337,6 +370,10 @@ networks:
       isoloom.environment: secdevlabs-super-recovery-password
 volumes:
   db-data:
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-super-recovery-password
+  api-ctf:
     labels:
       isoloom.managed: 'true'
       isoloom.environment: secdevlabs-super-recovery-password

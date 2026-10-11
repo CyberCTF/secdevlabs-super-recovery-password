@@ -1,0 +1,38 @@
+{
+  "objectives": [
+    {
+      "key": "main",
+      "title": "Read the flag",
+      "prompt": "Take over the admin account and retrieve the flag (/ctf/flag).",
+      "check": {
+        "evidence": "SECRET",
+        "format": "FLAG{%s}"
+      },
+      "dev": "FLAG{dev-secdevlabs-super-recovery-password}",
+      "hints": [
+        "The recovery flow tells you whether a login exists.",
+        "Read about insecure design in password recovery flows."
+      ],
+      "steps": [
+        {
+          "key": "questions",
+          "title": "Count the questions",
+          "prompt": "How many security questions does the recovery flow ask?",
+          "check": {
+            "answer_regex": "^\\s*(2|two)\\s*$"
+          }
+        },
+        {
+          "key": "class",
+          "title": "Name the weakness",
+          "prompt": "Which OWASP category fits this lab?",
+          "check": {
+            "answer": [
+              "insecure design"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
