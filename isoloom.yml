@@ -10,39 +10,51 @@ version: 1
 name: secdevlabs-super-recovery-password
 
 # Given by the CyberCTF launcher: this player's flag. Without it the development flag.
-inputs: [CTF_FLAG_MAIN]
+inputs:
+  CTF_FLAG_MAIN: {}
 
 networks:
-  lab: { cidr: 10.60.100.0/24, internet: false }
+  lab: {cidr: 10.60.100.0/24, internet: false}
 
 machines:
   db:
-    networks: { lab: 20 }
-    services: [{ port: 3306, name: mariadb }]
-    resources: { cpus: 1, memory_mb: 512 }
-    volumes: { data: /var/lib/mysql }
-    docker:
+    networks: {lab: 20}
+    resources: {cpus: 1, memory_mb: 512}
+    volumes: {data: /var/lib/mysql}
+    ports:
+      mariadb:
+        port: 3306
+    app:
       build: build/db
-
   api:
-    networks: { lab: 11 }
-    services: [{ port: 3000, name: api, http: true, publish: 3000 }]
-    resources: { cpus: 1, memory_mb: 512 }
+    networks: {lab: 11}
+    resources: {cpus: 1, memory_mb: 512}
     depends_on: [db]
-    inputs: [CTF_FLAG_MAIN]
-    volumes: { ctf: /ctf }   # the flag, written by ctf/flag.sh at every start
-    docker:
+    volumes: {ctf: /ctf}     # the flag, written by ctf/flag.sh at every start
+    ports:
+      api:
+        port: 3000
+        protocol: http
+        publish: true
+    files:
+      - path: /run/lab/ctf_flag_main
+        input: CTF_FLAG_MAIN
+    setup:
+      - ctf/flag.sh
+    app:
       build: build/api
-      init: [ctf/flag.sh]
 
   app:
-    networks: { lab: 10 }
-    services: [{ port: 40001, name: web, http: true, publish: 40001 }]
-    resources: { cpus: 1, memory_mb: 1536 }
+    networks: {lab: 10}
+    resources: {cpus: 1, memory_mb: 1536}
     depends_on: [api]
-    docker:
+    ports:
+      web:
+        port: 40001
+        protocol: http
+        publish: true
+    app:
       build: build/app
-
 checks:
   - name: the page answers
     http: http://app:40001/
@@ -54,6 +66,6 @@ checks:
     script: checks/userinfo.sh
 
 message: |
-  Super Recovery Password answers at http://localhost:{{ machines.app.services.0.publish }}/ and
-  its API at http://localhost:{{ machines.api.services.0.publish }}/. Look closely at "forgot my
+  Super Recovery Password answers at {{ machines.app.ports.web.url }} and
+  its API at {{ machines.api.ports.api.url }}. Look closely at "forgot my
   password": who can it tell you exists, and what does it take to reset a password?

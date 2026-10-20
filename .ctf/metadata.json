@@ -1,8 +1,11 @@
 {
+  "project_name": "cyberlabs-secdevlabs-super-recovery-password",
+  "slug": "secdevlabs-super-recovery-password",
   "title": "secDevLabs Super Recovery Password",
   "description": "A React login and registration app with a Go API on MariaDB, whose forgotten-password flow asks two security questions. The flow reveals whether a login exists and accepts unlimited guesses at the answers.",
-  "question": "Enumerate the users, reset the admin's password through the recovery questions and log in as admin. The flag is in /ctf/flag.",
-  "category": "WEB",
+  "category": "web",
   "difficulty": 2,
-  "evidence_kind": "SECRET"
+  "evidence_kind": "SECRET",
+  "capabilities": [],
+  "question": "Enumerate the users, reset the admin's password through the recovery questions and log in as admin. The flag is in /ctf/flag."
 }
